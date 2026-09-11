@@ -1,44 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { SKPDUnit, UserAccount, PermissionMatrix, UserRole } from '../types';
+import { UserAccount } from '../types';
 import {
-  Archive,
-  BookOpen,
-  Calendar,
   ChevronDown,
-  FileBarChart,
-  Layers,
-  MapPin,
-  RotateCcw,
-  Settings,
-  ShieldAlert,
   Sun,
   Moon,
-  UserCheck,
-  Building2,
   LogOut,
-  Cloud,
   Landmark,
-  User,
   UserCog,
-  SlidersHorizontal,
 } from 'lucide-react';
-import { isAppwriteLiveConfigured, APPWRITE_CONFIG } from '../services/appwriteClient';
 
 export type ActiveTab = 'audit-form' | 'rekap-kecamatan' | 'admin-builder' | 'superadmin' | 'panduan';
 
 interface NavbarProps {
-  activeTab: ActiveTab;
-  setActiveTab: (tab: ActiveTab) => void;
-  selectedKecamatanId: string;
-  setSelectedKecamatanId: (id: string) => void;
-  selectedUnit: 'UP' | 'UK';
-  setSelectedUnit: (unit: 'UP' | 'UK') => void;
-  selectedYear: number;
-  setSelectedYear: (year: number) => void;
   currentUser: UserAccount;
-  skpds: SKPDUnit[];
-  permissions: PermissionMatrix;
-  onResetDefaults: () => void;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   onLogout?: () => void;
@@ -46,18 +20,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  activeTab,
-  setActiveTab,
-  selectedKecamatanId,
-  setSelectedKecamatanId,
-  selectedUnit,
-  setSelectedUnit,
-  selectedYear,
-  setSelectedYear,
   currentUser,
-  skpds,
-  permissions,
-  onResetDefaults,
   theme,
   onToggleTheme,
   onLogout,
@@ -89,62 +52,34 @@ export const Navbar: React.FC<NavbarProps> = ({
     );
   };
 
-  const currentSKPD = skpds.find((k) => k.id === selectedKecamatanId) || skpds[0];
   const userRole = currentUser.role;
-  const rolePerms = permissions[userRole] || permissions.OPERATOR;
-
-  // Visibility flags based on dynamic permission toggles
-  const canSeeRekap = rolePerms.canViewAllRekap;
-  const canSeeBuilder = rolePerms.canManageInstruments;
-  const canSeeSuperAdmin =
-    rolePerms.canManageSKPD || rolePerms.canManageUsers || rolePerms.canConfigurePermissions;
 
   return (
     <header className="gov-header sticky top-0 z-40">
-      {/* Top Banner: Official Identity & Context */}
-      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between py-3 gap-3 border-b border-slate-200 dark:border-slate-800/80">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between py-2.5 gap-3">
           {/* Logo & Official Branding */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-500/40 flex items-center justify-center text-emerald-700 dark:text-emerald-400 shrink-0 shadow-sm">
-              <Landmark className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-500/40 flex items-center justify-center text-emerald-700 dark:text-emerald-400 shrink-0 shadow-sm">
+              <Landmark className="w-4.5 h-4.5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
+                <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                   ASKI <span className="text-emerald-600 dark:text-emerald-400">KOTABARU</span>
                 </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 rounded">
+                <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700 rounded hidden sm:inline-block">
                   ANRI PERKA NO. 6/2019
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
                 Audit Sistem Kearsipan Internal • Dinas Perpustakaan dan Kearsipan Kab. Kotabaru
               </p>
             </div>
           </div>
 
-          {/* Audit Selectors Bar: SKPD, Unit, Tahun, User Profile Switcher & Theme */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Active Audit Context Chip */}
-            <div
-              className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700/60 rounded-lg text-xs shadow-xs"
-              title="Objek Audit Aktif"
-            >
-              <Building2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <div className="flex items-center gap-1.5 text-left">
-                <span className="font-bold text-slate-800 dark:text-slate-100 max-w-[120px] sm:max-w-[190px] truncate">
-                  {currentSKPD?.nama}
-                </span>
-                <span className="px-1.5 py-0.2 rounded bg-emerald-600 text-white font-mono text-[10px] font-bold">
-                  {selectedUnit}
-                </span>
-                <span className="font-mono text-[11px] text-slate-500 dark:text-slate-400 font-semibold hidden md:inline">
-                  {selectedYear}
-                </span>
-              </div>
-            </div>
-
+          {/* Right: User Profile, Theme Toggle, Logout */}
+          <div className="flex items-center gap-2">
             {/* User Profile Bar & Popover Menu */}
             <div className="relative" ref={profileMenuRef}>
               <button
@@ -230,7 +165,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                   {/* Actions */}
                   <div className="space-y-1">
-
                     <button
                       type="button"
                       onClick={() => {
@@ -259,31 +193,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 </div>
               )}
-            </div>
-
-
-            {/* Appwrite Connection Badge */}
-            <div
-              className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-medium border ${
-                isAppwriteLiveConfigured()
-                  ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
-                  : 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700/60 text-amber-700 dark:text-amber-300'
-              }`}
-              title={
-                isAppwriteLiveConfigured()
-                  ? `Terhubung ke Appwrite (${APPWRITE_CONFIG.projectId})`
-                  : 'Mode Demo / Penyimpanan Lokal Aktif (Lihat .env untuk menghubungkan ke Appwrite Cloud)'
-              }
-            >
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  isAppwriteLiveConfigured() ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
-                }`}
-              />
-              <Cloud className="w-3 h-3" />
-              <span className="text-[10px]">
-                {isAppwriteLiveConfigured() ? 'Appwrite Live' : 'Demo Local'}
-              </span>
             </div>
 
             {/* Theme Toggle Button (Light / Dark Mode) */}
@@ -315,89 +224,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
         </div>
-
-
-        {/* Tab Navigation Strip (Role-aware & Dynamic Permission checks) */}
-        <div className="flex items-center space-x-1 pt-1 overflow-x-auto text-xs">
-          {/* TAB 1: FORMULIR AUDIT */}
-          <button
-            type="button"
-            onClick={() => setActiveTab('audit-form')}
-            className={`flex items-center gap-2 px-4 py-2.5 font-semibold transition border-b-2 shrink-0 ${
-              activeTab === 'audit-form'
-                ? 'border-emerald-600 text-emerald-700 bg-emerald-50 dark:border-emerald-500 dark:text-emerald-400 dark:bg-emerald-950/20'
-                : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span>Formulir Pengawasan ({selectedUnit} - {currentSKPD?.nama})</span>
-          </button>
-
-          {/* TAB 2: REKAPITULASI (Only visible if canViewAllRekap) */}
-          {canSeeRekap && (
-            <button
-              type="button"
-              onClick={() => setActiveTab('rekap-kecamatan')}
-              className={`flex items-center gap-2 px-4 py-2.5 font-semibold transition border-b-2 shrink-0 ${
-                activeTab === 'rekap-kecamatan'
-                  ? 'border-emerald-600 text-emerald-700 bg-emerald-50 dark:border-emerald-500 dark:text-emerald-400 dark:bg-emerald-950/20'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              <FileBarChart className="w-4 h-4" />
-              <span>Rekapitulasi 22 Kecamatan & SKPD</span>
-            </button>
-          )}
-
-          {/* TAB 3: PEMBUAT INSTRUMEN & LOGIC (Only visible if canManageInstruments) */}
-          {canSeeBuilder && (
-            <button
-              type="button"
-              onClick={() => setActiveTab('admin-builder')}
-              className={`flex items-center gap-2 px-4 py-2.5 font-semibold transition border-b-2 shrink-0 ${
-                activeTab === 'admin-builder'
-                  ? 'border-emerald-600 text-emerald-700 bg-emerald-50 dark:border-emerald-500 dark:text-emerald-400 dark:bg-emerald-950/20'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              <Settings className="w-4 h-4" />
-              <span>Manajemen Soal & Logic (Tim Audit)</span>
-            </button>
-          )}
-
-          {/* TAB 4: SUPER ADMIN PANEL (Only visible if canManageSKPD or canManageUsers or canConfigurePermissions) */}
-          {canSeeSuperAdmin && (
-            <button
-              type="button"
-              onClick={() => setActiveTab('superadmin')}
-              className={`flex items-center gap-2 px-4 py-2.5 font-semibold transition border-b-2 shrink-0 ${
-                activeTab === 'superadmin'
-                  ? 'border-purple-600 text-purple-700 bg-purple-50 dark:border-purple-500 dark:text-purple-400 dark:bg-purple-950/20'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              <ShieldAlert className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-              <span>Super Admin (SKPD, Akun & Toggle Izin)</span>
-            </button>
-          )}
-
-          {/* TAB 5: PEDOMAN & SKKAAD (Always accessible) */}
-          <button
-            type="button"
-            onClick={() => setActiveTab('panduan')}
-            className={`flex items-center gap-2 px-4 py-2.5 font-semibold transition border-b-2 shrink-0 ${
-              activeTab === 'panduan'
-                ? 'border-emerald-600 text-emerald-700 bg-emerald-50 dark:border-emerald-500 dark:text-emerald-400 dark:bg-emerald-950/20'
-                : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>Pedoman Pengawasan & SKKAAD</span>
-          </button>
-        </div>
       </div>
-
     </header>
   );
 };
-

@@ -167,7 +167,7 @@ export const AuditFormPage: React.FC<AuditFormPageProps> = ({
 
   return (
     <div ref={scrollRef} className="flex-1 overflow-y-auto">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      <div className="max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5 transition-all duration-200">
         {/* Page Header: Category Title + Stats */}
         <div className="gov-card p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           {/* Top row: Breadcrumb + Context */}

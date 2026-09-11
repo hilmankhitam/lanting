@@ -573,20 +573,9 @@ export const App: React.FC = () => {
 
       {/* Main Navbar with Profile Bar and User Menu */}
       <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        selectedKecamatanId={selectedKecamatanId}
-        setSelectedKecamatanId={setSelectedKecamatanId}
-        selectedUnit={selectedUnit}
-        setSelectedUnit={setSelectedUnit}
-        selectedYear={selectedYear}
-        setSelectedYear={setSelectedYear}
         currentUser={currentUser}
-        skpds={skpds}
-        permissions={permissions}
         theme={theme}
         onToggleTheme={toggleTheme}
-        onResetDefaults={resetAllDataToDefault}
         onLogout={handleLogout}
         onOpenProfileSettings={() => setIsProfileModalOpen(true)}
       />
@@ -606,34 +595,36 @@ export const App: React.FC = () => {
 
 
 
-      {/* Content Body */}
-      {activeTab === 'audit-form' ? (
-        /* AUDIT FORM TAB: Full-width sidebar + content layout (no max-w container) */
-        <div className="flex-1 flex overflow-hidden">
-          {/* Permanent Left Sidebar */}
-          <AuditSidebar
-            selectedKecamatanId={selectedKecamatanId}
-            setSelectedKecamatanId={setSelectedKecamatanId}
-            selectedUnit={selectedUnit}
-            setSelectedUnit={setSelectedUnit}
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-            currentUser={currentUser}
-            skpds={skpds}
-            activeCategories={activeCategories}
-            activeQuestions={activeQuestions}
-            evalResult={evalResult}
-            activeCategoryId={activeCategoryPageId}
-            onSelectCategory={setActiveCategoryPageId}
-            sessionStatus={currentSession.status}
-            onSaveDraft={handleSaveDraft}
-            onSubmitAudit={handleSubmitAudit}
-            onExportExcel={handleExportExcel}
-            canExport={currentPermissions.canExportReports}
-            userRole={currentUser.role}
-          />
+      {/* Content Body: Persistent Sidebar + Main Content Area */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Permanent Left Sidebar (always visible) */}
+        <AuditSidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          permissions={permissions}
+          selectedKecamatanId={selectedKecamatanId}
+          setSelectedKecamatanId={setSelectedKecamatanId}
+          selectedUnit={selectedUnit}
+          setSelectedUnit={setSelectedUnit}
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          currentUser={currentUser}
+          skpds={skpds}
+          activeCategories={activeCategories}
+          activeQuestions={activeQuestions}
+          evalResult={evalResult}
+          activeCategoryId={activeCategoryPageId}
+          onSelectCategory={setActiveCategoryPageId}
+          sessionStatus={currentSession.status}
+          onSaveDraft={handleSaveDraft}
+          onSubmitAudit={handleSubmitAudit}
+          onExportExcel={handleExportExcel}
+          canExport={currentPermissions.canExportReports}
+          userRole={currentUser.role}
+        />
 
-          {/* Main Content: Category-Page Guided Form */}
+        {/* Main Content Area */}
+        {activeTab === 'audit-form' ? (
           <AuditFormPage
             activeCategories={activeCategories}
             activeQuestions={activeQuestions}
@@ -650,9 +641,8 @@ export const App: React.FC = () => {
             skpdName={currentSKPD.nama}
             lastSavedTime={lastSavedTime}
           />
-        </div>
-      ) : (
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        ) : (
+        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6">
         <Suspense
           fallback={
             <div className="flex flex-col items-center justify-center p-16 space-y-3 text-slate-400">
@@ -718,8 +708,9 @@ export const App: React.FC = () => {
           {/* TAB 5: PANDUAN ASKI */}
           {activeTab === 'panduan' && <PanduanSection />}
         </Suspense>
-      </main>
-      )}
+        </main>
+        )}
+      </div>
 
       {/* Institutional Footer */}
       <footer className="mt-12 py-5 border-t border-slate-200 dark:border-slate-800/80 text-center text-xs text-slate-500 bg-slate-100 dark:bg-[#070a12]">
